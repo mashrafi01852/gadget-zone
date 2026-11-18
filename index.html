@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gadget Zone: Essential electronics, no account needed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #10203a; --paper: #f3f6fa; --card: #fff; --line: #d5dce6;
+    --muted: #54627a; --signal: #ffd02e; --blue: #2447d6;
+    --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1rem/1.6 var(--body); }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .wrap { width: min(1120px, 100% - 2.5rem); margin-inline: auto; }
+
+  header.top { padding: 1.25rem 0; }
+  .brand { font: 800 1.4rem/1 var(--display); text-decoration: none; letter-spacing: -.02em; }
+  .brand i { font-style: normal; background: var(--signal); padding: .1em .3em; border-radius: .25em; margin-left: .15em; }
+
+  .hero { padding: clamp(2.5rem, 8vw, 6rem) 0 clamp(2rem, 5vw, 3.5rem); }
+  .hero h1 { font: 800 clamp(2.5rem, 8vw, 5.5rem)/.98 var(--display); letter-spacing: -.035em; margin: 0 0 1.25rem; max-width: 14ch; }
+  .hero p { font-size: clamp(1.05rem, 2.2vw, 1.3rem); color: var(--muted); max-width: 52ch; margin: 0 0 2rem; }
+  .perks { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 2rem 0 0; padding: 0; list-style: none; font-weight: 600; font-size: .95rem; }
+  .perks li::before { content: "✓"; color: var(--blue); margin-right: .45rem; }
+
+  .btn { display: inline-block; font: 600 1rem/1 var(--body); text-decoration: none; padding: .95rem 1.4rem; border-radius: .6rem; border: 2px solid var(--ink); background: var(--ink); color: #fff; text-align: center; transition: transform .12s, background .12s; }
+  .btn:hover { transform: translateY(-2px); background: var(--blue); border-color: var(--blue); }
+  .btn.signal { background: var(--signal); color: var(--ink); }
+  .btn.signal:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  .shop { padding: 1.5rem 0 4rem; }
+  .shop h2 { font: 800 clamp(1.6rem, 4vw, 2.2rem)/1.1 var(--display); letter-spacing: -.02em; margin: 0 0 1.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+  .product { background: var(--card); border: 1px solid var(--line); border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; }
+  .thumb { aspect-ratio: 4 / 3; display: grid; place-items: center; background: #e4eaf3; color: #8d9bb3; font: 600 .95rem var(--body); position: relative; }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .info { padding: 1.1rem 1.1rem 1.25rem; display: flex; flex-direction: column; gap: .4rem; flex: 1; }
+  .info h3 { font: 800 1.15rem/1.25 var(--display); margin: 0; }
+  .info p { margin: 0; color: var(--muted); font-size: .95rem; flex: 1; }
+  .price { font: 800 1.4rem/1 var(--display); margin: .6rem 0 .8rem; }
+
+  .promise { background: var(--ink); color: #fff; padding: 3rem 0; }
+  .promise .wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem 2.5rem; }
+  .promise h3 { font: 800 1.2rem/1.2 var(--display); margin: 0 0 .35rem; color: var(--signal); }
+  .promise p { margin: 0; color: #c5cfe0; }
+
+  .banner { padding: 3.5rem 0; }
+  .banner .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
+  .banner h2 { font: 800 clamp(1.6rem, 4vw, 2.4rem)/1.1 var(--display); letter-spacing: -.02em; margin: 0 0 .4rem; }
+  .banner p { margin: 0; color: var(--muted); }
+
+  footer { padding: 0 0 2rem; color: var(--muted); font-size: .9rem; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+  HOW TO EDIT THIS PAGE
+  1. Open this file in any text editor (Notepad, TextEdit, VS Code).
+  2. Search for  href="#"  . Every button on the page has one, and each
+     has a comment right above it saying what the button is.
+  3. Replace the # with your link, e.g. href="https://your-checkout-link".
+  4. Change any text between tags (headlines, names, prices, button text).
+  5. Save, then refresh the page in your browser.
+===================================================================== -->
+
+<header class="top">
+  <div class="wrap">
+    <!-- LOGO LINK: where clicking the logo goes -->
+    <a class="brand" href="#">Gadget<i>Zone</i></a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero">
+    <div class="wrap">
+      <h1>The electronics you actually use, all in one zone.</h1>
+      <p>Chargers, earbuds, speakers, and everyday tech at honest prices. Pick it, pay, and it’s on its way. No account needed.</p>
+
+      <!-- HERO BUTTON LINK: paste your URL in href below.
+           Tip: use href="#products" to scroll down to the product grid instead. -->
+      <a class="btn signal" href="#">Shop the essentials</a>
+
+      <ul class="perks">
+        <li>Guest checkout only</li>
+        <li>Fast dispatch</li>
+        <li>30-day returns</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ====================== PRODUCT GRID ======================
+    One grid, all products together. To add a product, copy a whole
+    <article> ... </article> block and paste it inside the grid.
+    To remove one, delete its block.
+
+    IMAGES: each product shows a grey "Product image" placeholder. To use
+    a real picture, replace that placeholder line with:
+      <img src="images/your-photo.jpg" alt="Product name">
+    (put the photo in an "images" folder next to this file, or use a web URL)
+  -->
+  <section class="shop" id="products">
+    <div class="wrap">
+      <h2>Shop the essentials</h2>
+
+      <div class="grid">
+
+        <!-- PRODUCT 1 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>Wireless Earbuds Pro</h3>
+            <p>Noise-reducing earbuds with 24 hours of battery in the case.</p>
+            <div class="price">$59.00</div>
+            <!-- BUY BUTTON LINK (Product 1): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- PRODUCT 2 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>Bluetooth Speaker Mini</h3>
+            <p>Pocket-sized, water-resistant, and loud enough for a room.</p>
+            <div class="price">$34.50</div>
+            <!-- BUY BUTTON LINK (Product 2): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- PRODUCT 3 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>65W Fast Charger</h3>
+            <p>One GaN charger for your laptop, phone, and tablet.</p>
+            <div class="price">$29.00</div>
+            <!-- BUY BUTTON LINK (Product 3): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- PRODUCT 4 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>20,000 mAh Power Bank</h3>
+            <p>Charges a phone about five times. Two USB-C ports.</p>
+            <div class="price">$39.00</div>
+            <!-- BUY BUTTON LINK (Product 4): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- PRODUCT 5 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>Smart Watch Active</h3>
+            <p>Heart rate, sleep tracking, and a week of battery.</p>
+            <div class="price">$89.00</div>
+            <!-- BUY BUTTON LINK (Product 5): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- PRODUCT 6 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>Wireless Mouse</h3>
+            <p>Quiet clicks, USB receiver or Bluetooth, months of battery life.</p>
+            <div class="price">$19.99</div>
+            <!-- BUY BUTTON LINK (Product 6): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- PRODUCT 7 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>USB-C Hub 7-in-1</h3>
+            <p>HDMI, SD card, USB-A, and pass-through charging.</p>
+            <div class="price">$32.00</div>
+            <!-- BUY BUTTON LINK (Product 7): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- PRODUCT 8 -->
+        <article class="product">
+          <div class="thumb">Product image</div>
+          <div class="info">
+            <h3>1080p Webcam</h3>
+            <p>Sharp video with a built-in mic. Plug in and go.</p>
+            <div class="price">$44.00</div>
+            <!-- BUY BUTTON LINK (Product 8): paste checkout URL in href -->
+            <a class="btn" href="#">Buy Now</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= PROMISES ========================= -->
+  <section class="promise">
+    <div class="wrap">
+      <div><h3>No account, ever</h3><p>Pick a product and pay. We never ask you to sign up.</p></div>
+      <div><h3>Straightforward pricing</h3><p>The price on the card is the price you see at checkout.</p></div>
+      <div><h3>Help when you need it</h3><p>Questions about an order? Reply to your confirmation email.</p></div>
+    </div>
+  </section>
+
+  <!-- ========================= BOTTOM BANNER ========================= -->
+  <section class="banner">
+    <div class="wrap">
+      <div>
+        <h2>Ready to upgrade your setup?</h2>
+        <p>Browse everything above and check out as a guest in under a minute.</p>
+      </div>
+      <!-- BANNER BUTTON LINK: paste your URL in href below -->
+      <a class="btn signal" href="#">Start shopping</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Gadget Zone. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
