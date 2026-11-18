@@ -57,6 +57,28 @@
   .banner p { margin: 0; color: var(--muted); }
 
   footer { padding: 0 0 2rem; color: var(--muted); font-size: .9rem; }
+  /* ---- Admin login + edit mode (only appears after the owner logs in) ---- */
+  .admin-link { margin-left: 1rem; font-size: .8rem; opacity: .55; }
+  dialog.login { border: 0; border-radius: 1rem; padding: 1.5rem; width: min(92vw, 360px); color: var(--ink); box-shadow: 0 20px 60px rgba(16,32,58,.35); }
+  dialog.login::backdrop { background: rgba(16,32,58,.6); }
+  dialog.login h2 { font: 800 1.4rem/1.2 var(--display); margin: 0 0 1rem; }
+  dialog.login label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: .8rem; }
+  dialog.login input { display: block; width: 100%; margin-top: .3rem; padding: .7rem .8rem; border: 2px solid var(--line); border-radius: .5rem; font: inherit; }
+  .login-err { color: #b3261e; min-height: 1.3em; font-size: .9rem; margin: 0 0 .6rem; }
+  .login-row { display: flex; gap: .6rem; }
+  .login-row button, .bar button { font: 600 .95rem var(--body); padding: .7rem 1rem; border-radius: .5rem; border: 2px solid var(--ink); background: var(--ink); color: #fff; cursor: pointer; }
+  .login-row button.ghost { background: #fff; color: var(--ink); }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--ink); color: #fff; padding: .75rem 1rem calc(.75rem + env(safe-area-inset-bottom, 0px)); display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; justify-content: center; }
+  .bar span { font-weight: 600; font-size: .9rem; flex-basis: 100%; text-align: center; }
+  .bar button { border-color: #fff; }
+  .bar button.go { background: var(--signal); color: var(--ink); border-color: var(--signal); }
+  body.editing { padding-bottom: 7rem; }
+  body.editing [contenteditable="true"] { outline: 2px dashed var(--blue); outline-offset: 3px; cursor: text; }
+  body.editing a.btn { outline: 2px dashed #d4380d; outline-offset: 3px; cursor: pointer; }
+  .product { position: relative; }
+  .pctl { position: absolute; top: .5rem; right: .5rem; display: flex; gap: .4rem; z-index: 2; }
+  .pctl button, .pctl label { font: 600 .75rem var(--body); padding: .4rem .6rem; border-radius: .4rem; border: 0; background: var(--ink); color: #fff; cursor: pointer; }
+  .pctl .del { background: #b3261e; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -70,6 +92,15 @@
   3. Replace the # with your link, e.g. href="https://your-checkout-link".
   4. Change any text between tags (headlines, names, prices, button text).
   5. Save, then refresh the page in your browser.
+
+  EDITING IN THE BROWSER (owner only):
+  Click "Admin" at the very bottom of the page and log in. Then click any
+  text to edit it, click a button to change its text and link, use the
+  buttons on each product to change the image or delete it, and "Add
+  product" for new ones. Click "Download updated page" to save a new
+  gadget-zone.html, then replace this file with the downloaded one.
+  Edits are NOT saved on their own: refreshing without downloading
+  loses them.
 ===================================================================== -->
 
 <header class="top">
@@ -239,8 +270,197 @@
 </main>
 
 <footer>
-  <div class="wrap">© 2026 Gadget Zone. All rights reserved.</div>
+  <div class="wrap">
+    <span id="copy">© 2026 Gadget Zone. All rights reserved.</span>
+    <!-- ADMIN LOGIN LINK: opens the owner login. Leave href="#"; do not put a URL here. -->
+    <a class="admin-link" href="#" id="adminLink">Admin</a>
+  </div>
 </footer>
 
+<!-- Owner login (hidden until the footer "Admin" link is clicked; visitors never see it) -->
+<dialog class="login" id="loginDialog">
+  <form id="loginForm" autocomplete="off">
+    <h2>Owner login</h2>
+    <label>Username<input id="lUser" type="text" required autocapitalize="none"></label>
+    <label>Password<input id="lPass" type="password" required></label>
+    <p class="login-err" id="lErr" role="alert"></p>
+    <div class="login-row">
+      <button type="submit">Log in</button>
+      <button type="button" class="ghost" id="lCancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function () {
+  /* The login is stored as scrambled codes, not plain text. Note: this keeps casual
+     visitors out of edit mode, but a static file cannot be fully secure. Anyone
+     who copies your HTML file can change it, and only your real hosting
+     controls what is published. To change the login, open the browser console
+     (F12) and type  adminHash("new text")  to get a code, then paste it below. */
+  var USER_HASH = "53pyx57a4v";
+  var PASS_HASH = "25e1bnvc0rf";
+
+  function hash(s) {
+    var h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (var i = 0, c; i < s.length; i++) {
+      c = s.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 2654435761);
+      h2 = Math.imul(h2 ^ c, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  }
+  window.adminHash = hash;
+
+  var EDITABLE = ".brand,.hero h1,.hero p,.perks li,.shop h2,.info h3,.info p,.price,.promise h3,.promise p,.banner h2,.banner p,#copy";
+  var body = document.body, unsaved = false;
+  var $ = function (id) { return document.getElementById(id); };
+  var isEditing = function () { return body.classList.contains("editing"); };
+
+  /* ---------- login ---------- */
+  $("adminLink").addEventListener("click", function (e) {
+    e.preventDefault();
+    if (isEditing()) return;
+    $("lErr").textContent = ""; $("lUser").value = ""; $("lPass").value = "";
+    $("loginDialog").showModal();
+  });
+  $("lCancel").addEventListener("click", function () { $("loginDialog").close(); });
+  $("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (hash($("lUser").value.trim()) === USER_HASH && hash($("lPass").value) === PASS_HASH) {
+      $("loginDialog").close();
+      enter();
+    } else {
+      $("lErr").textContent = "Wrong username or password.";
+      $("lPass").value = "";
+    }
+  });
+
+  /* ---------- edit mode ---------- */
+  function refresh() {
+    document.querySelectorAll(EDITABLE).forEach(function (el) { el.setAttribute("contenteditable", "true"); });
+    document.querySelectorAll(".product").forEach(function (p) {
+      if (p.querySelector(".pctl")) return;
+      var c = document.createElement("div");
+      c.className = "pctl admin-only";
+      c.innerHTML = '<label>Upload image<input type="file" accept="image/*" hidden></label>' +
+                    '<button type="button" class="url">Image URL</button>' +
+                    '<button type="button" class="del">Delete</button>';
+      p.insertBefore(c, p.firstChild);
+    });
+  }
+
+  function enter() {
+    body.classList.add("editing");
+    refresh();
+    if (!$("adminBar")) {
+      var bar = document.createElement("div");
+      bar.className = "bar admin-only"; bar.id = "adminBar";
+      bar.innerHTML = '<span>Admin mode: click text to edit. Click a button to change its text and link.</span>' +
+        '<button type="button" id="bAdd">Add product</button>' +
+        '<button type="button" class="go" id="bSave">Download updated page</button>' +
+        '<button type="button" id="bExit">Exit admin</button>';
+      body.appendChild(bar);
+      $("bAdd").onclick = addProduct;
+      $("bSave").onclick = download;
+      $("bExit").onclick = function () {
+        if (unsaved && !confirm("You have changes you have not downloaded. Exit anyway?")) return;
+        exit(); unsaved = false;
+      };
+    }
+  }
+
+  function exit() {
+    body.classList.remove("editing");
+    document.querySelectorAll("[contenteditable]").forEach(function (el) { el.removeAttribute("contenteditable"); });
+    document.querySelectorAll(".admin-only").forEach(function (el) { el.remove(); });
+    if (!body.getAttribute("class")) body.removeAttribute("class");
+  }
+
+  function addProduct() {
+    var grid = document.querySelector(".grid");
+    grid.insertAdjacentHTML("beforeend",
+      '<article class="product"><div class="thumb">Product image</div><div class="info">' +
+      '<h3>New product</h3><p>Describe this product.</p><div class="price">$0.00</div>' +
+      '<!-- BUY BUTTON LINK (new product): paste checkout URL in href -->' +
+      '<a class="btn" href="#">Buy Now</a></div></article>');
+    refresh(); unsaved = true;
+    grid.lastElementChild.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function setImage(product, src) {
+    var t = product.querySelector(".thumb"), img = t.querySelector("img");
+    if (!img) {
+      t.textContent = "";
+      img = document.createElement("img");
+      img.alt = product.querySelector("h3").textContent.trim();
+      t.appendChild(img);
+    }
+    img.src = src; unsaved = true;
+  }
+
+  /* per-product controls */
+  document.addEventListener("click", function (e) {
+    if (!isEditing()) return;
+    var p = e.target.closest(".product");
+    if (e.target.closest(".del") && p) {
+      if (confirm("Delete this product?")) { p.remove(); unsaved = true; }
+    } else if (e.target.closest(".url") && p) {
+      var u = prompt("Paste the image URL or file path (e.g. images/photo.jpg):");
+      if (u && u.trim()) setImage(p, u.trim());
+    }
+  });
+  document.addEventListener("change", function (e) {
+    if (!isEditing() || e.target.type !== "file") return;
+    var f = e.target.files[0], p = e.target.closest(".product");
+    if (!f || !p) return;
+    var r = new FileReader();
+    r.onload = function () { setImage(p, r.result); };
+    r.readAsDataURL(f);
+  });
+
+  /* in edit mode, clicking a link edits it instead of following it */
+  document.addEventListener("click", function (e) {
+    if (!isEditing()) return;
+    var a = e.target.closest("a");
+    if (!a || a.id === "adminLink") return;
+    e.preventDefault();
+    if (a.classList.contains("btn")) {
+      var t = prompt("Button text:", a.textContent.trim());
+      if (t !== null && t.trim()) a.textContent = t.trim();
+      var l = prompt("Button link (paste your checkout or page URL):", a.getAttribute("href"));
+      if (l !== null) a.setAttribute("href", l.trim() || "#");
+      unsaved = true;
+    }
+  }, true);
+
+  /* plain-text paste, no Enter line breaks */
+  document.addEventListener("paste", function (e) {
+    if (!isEditing() || !e.target.closest("[contenteditable]")) return;
+    e.preventDefault();
+    document.execCommand("insertText", false, (e.clipboardData || window.clipboardData).getData("text/plain"));
+  });
+  document.addEventListener("keydown", function (e) {
+    if (isEditing() && e.key === "Enter" && e.target.closest("[contenteditable]")) e.preventDefault();
+  });
+  document.addEventListener("input", function () { if (isEditing()) unsaved = true; });
+  window.addEventListener("beforeunload", function (e) { if (isEditing() && unsaved) { e.preventDefault(); e.returnValue = ""; } });
+
+  /* ---------- save: download a clean copy of the page ---------- */
+  function download() {
+    exit();
+    var html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = "gadget-zone.html";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    unsaved = false;
+    enter();
+  }
+})();
+</script>
 </body>
 </html>
