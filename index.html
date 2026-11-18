@@ -79,6 +79,18 @@
   .pctl { position: absolute; top: .5rem; right: .5rem; display: flex; gap: .4rem; z-index: 2; }
   .pctl button, .pctl label { font: 600 .75rem var(--body); padding: .4rem .6rem; border-radius: .4rem; border: 0; background: var(--ink); color: #fff; cursor: pointer; }
   .pctl .del { background: #b3261e; }
+  /* ---- Prices ---- */
+  .price { display: flex; align-items: baseline; flex-wrap: wrap; gap: .1rem .6rem; }
+  .price span:empty { display: none; }
+  .price-offer { order: 1; }
+  .price-regular { order: 2; }
+  .price:has(.price-offer:not(:empty)) .price-regular { font: 400 1rem var(--body); color: var(--muted); text-decoration: line-through; }
+  body.editing .price span:empty { display: inline-block; min-width: 7ch; }
+  body.editing .price-offer:empty::before { content: "Offer price"; color: #8d9bb3; font: 400 .8rem var(--body); }
+  body.editing .price-regular:empty::before { content: "Regular price"; color: #8d9bb3; font: 400 .8rem var(--body); }
+  /* ---- Hidden link box under each button (owner only) ---- */
+  .linkbox { flex-basis: 100%; margin: .5rem 0 0; font: 600 .75rem var(--body); color: var(--ink); text-align: left; }
+  .linkbox input { display: block; width: 100%; max-width: 380px; margin-top: .2rem; padding: .45rem .6rem; border: 2px dashed #d4380d; border-radius: .4rem; background: #fff6e0; font: 400 .85rem var(--body); color: var(--ink); }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -87,15 +99,17 @@
 <!-- =====================================================================
   HOW TO EDIT THIS PAGE
   1. Open this file in any text editor (Notepad, TextEdit, VS Code).
-  2. Search for  href="#"  . Every button on the page has one, and each
+  2. Search for  data-link=""  . Every button on the page has one, and each
      has a comment right above it saying what the button is.
-  3. Replace the # with your link, e.g. href="https://your-checkout-link".
+  3. Paste your link between the quotes, e.g. data-link="https://your-checkout-link".
+     Leave href="#" as it is. Visitors never see the link on screen: they
+     only see the button, and clicking it sends them to your link.
   4. Change any text between tags (headlines, names, prices, button text).
   5. Save, then refresh the page in your browser.
 
   EDITING IN THE BROWSER (owner only):
   Click "Admin" at the very bottom of the page and log in. Then click any
-  text to edit it, click a button to change its text and link, use the
+  text to edit it, click a button to change its text (its hidden link has a box right under it), use the
   buttons on each product to change the image or delete it, and "Add
   product" for new ones. Click "Download updated page" to save a new
   gadget-zone.html, then replace this file with the downloaded one.
@@ -118,9 +132,9 @@
       <h1>The electronics you actually use, all in one zone.</h1>
       <p>Chargers, earbuds, speakers, and everyday tech at honest prices. Pick it, pay, and it’s on its way. No account needed.</p>
 
-      <!-- HERO BUTTON LINK: paste your URL in href below.
-           Tip: use href="#products" to scroll down to the product grid instead. -->
-      <a class="btn signal" href="#">Shop the essentials</a>
+      <!-- HERO BUTTON LINK: paste your URL between the quotes of data-link="". Leave href="#".
+           Tip: use data-link="#products" to scroll down to the product grid instead. -->
+      <a class="btn signal" href="#" data-link="">Shop the essentials</a>
 
       <ul class="perks">
         <li>Guest checkout only</li>
@@ -134,6 +148,11 @@
     One grid, all products together. To add a product, copy a whole
     <article> ... </article> block and paste it inside the grid.
     To remove one, delete its block.
+
+    PRICES: each product has two price spots. "price-regular" is the normal
+    price. "price-offer" is the sale price. When an offer price is filled in,
+    it is shown big with the regular price crossed out beside it. Leave the
+    offer empty and only the regular price shows.
 
     IMAGES: each product shows a grey "Product image" placeholder. To use
     a real picture, replace that placeholder line with:
@@ -152,9 +171,9 @@
           <div class="info">
             <h3>Wireless Earbuds Pro</h3>
             <p>Noise-reducing earbuds with 24 hours of battery in the case.</p>
-            <div class="price">$59.00</div>
-            <!-- BUY BUTTON LINK (Product 1): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer">$59.00</span><span class="price-regular">$79.00</span></div>
+            <!-- BUY BUTTON LINK (Product 1): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -164,9 +183,9 @@
           <div class="info">
             <h3>Bluetooth Speaker Mini</h3>
             <p>Pocket-sized, water-resistant, and loud enough for a room.</p>
-            <div class="price">$34.50</div>
-            <!-- BUY BUTTON LINK (Product 2): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer"></span><span class="price-regular">$34.50</span></div>
+            <!-- BUY BUTTON LINK (Product 2): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -176,9 +195,9 @@
           <div class="info">
             <h3>65W Fast Charger</h3>
             <p>One GaN charger for your laptop, phone, and tablet.</p>
-            <div class="price">$29.00</div>
-            <!-- BUY BUTTON LINK (Product 3): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer"></span><span class="price-regular">$29.00</span></div>
+            <!-- BUY BUTTON LINK (Product 3): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -188,9 +207,9 @@
           <div class="info">
             <h3>20,000 mAh Power Bank</h3>
             <p>Charges a phone about five times. Two USB-C ports.</p>
-            <div class="price">$39.00</div>
-            <!-- BUY BUTTON LINK (Product 4): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer"></span><span class="price-regular">$39.00</span></div>
+            <!-- BUY BUTTON LINK (Product 4): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -200,9 +219,9 @@
           <div class="info">
             <h3>Smart Watch Active</h3>
             <p>Heart rate, sleep tracking, and a week of battery.</p>
-            <div class="price">$89.00</div>
-            <!-- BUY BUTTON LINK (Product 5): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer"></span><span class="price-regular">$89.00</span></div>
+            <!-- BUY BUTTON LINK (Product 5): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -212,9 +231,9 @@
           <div class="info">
             <h3>Wireless Mouse</h3>
             <p>Quiet clicks, USB receiver or Bluetooth, months of battery life.</p>
-            <div class="price">$19.99</div>
-            <!-- BUY BUTTON LINK (Product 6): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer">$19.99</span><span class="price-regular">$24.99</span></div>
+            <!-- BUY BUTTON LINK (Product 6): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -224,9 +243,9 @@
           <div class="info">
             <h3>USB-C Hub 7-in-1</h3>
             <p>HDMI, SD card, USB-A, and pass-through charging.</p>
-            <div class="price">$32.00</div>
-            <!-- BUY BUTTON LINK (Product 7): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer"></span><span class="price-regular">$32.00</span></div>
+            <!-- BUY BUTTON LINK (Product 7): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -236,9 +255,9 @@
           <div class="info">
             <h3>1080p Webcam</h3>
             <p>Sharp video with a built-in mic. Plug in and go.</p>
-            <div class="price">$44.00</div>
-            <!-- BUY BUTTON LINK (Product 8): paste checkout URL in href -->
-            <a class="btn" href="#">Buy Now</a>
+            <div class="price"><span class="price-offer"></span><span class="price-regular">$44.00</span></div>
+            <!-- BUY BUTTON LINK (Product 8): paste your URL between the quotes of data-link="". Leave href="#". -->
+            <a class="btn" href="#" data-link="">Buy Now</a>
           </div>
         </article>
 
@@ -262,8 +281,8 @@
         <h2>Ready to upgrade your setup?</h2>
         <p>Browse everything above and check out as a guest in under a minute.</p>
       </div>
-      <!-- BANNER BUTTON LINK: paste your URL in href below -->
-      <a class="btn signal" href="#">Start shopping</a>
+      <!-- BANNER BUTTON LINK: paste your URL between the quotes of data-link="". Leave href="#". -->
+      <a class="btn signal" href="#" data-link="">Start shopping</a>
     </div>
   </section>
 
@@ -314,10 +333,21 @@
   }
   window.adminHash = hash;
 
-  var EDITABLE = ".brand,.hero h1,.hero p,.perks li,.shop h2,.info h3,.info p,.price,.promise h3,.promise p,.banner h2,.banner p,#copy";
+  var EDITABLE = ".brand,.hero h1,.hero p,.perks li,.shop h2,.info h3,.info p,.price-offer,.price-regular,.promise h3,.promise p,.banner h2,.banner p,#copy";
   var body = document.body, unsaved = false;
   var $ = function (id) { return document.getElementById(id); };
   var isEditing = function () { return body.classList.contains("editing"); };
+
+  /* ---------- visitors: a button with a data-link sends them to that link ---------- */
+  document.addEventListener("click", function (e) {
+    if (isEditing()) return;
+    var a = e.target.closest && e.target.closest("a[data-link]");
+    if (!a) return;
+    var l = (a.getAttribute("data-link") || "").trim();
+    if (!l || /^\s*javascript:/i.test(l)) return;
+    e.preventDefault();
+    window.location.href = l;
+  });
 
   /* ---------- login ---------- */
   $("adminLink").addEventListener("click", function (e) {
@@ -341,6 +371,15 @@
   /* ---------- edit mode ---------- */
   function refresh() {
     document.querySelectorAll(EDITABLE).forEach(function (el) { el.setAttribute("contenteditable", "true"); });
+    document.querySelectorAll("a.btn").forEach(function (a) {
+      var n = a.nextElementSibling;
+      if (n && n.classList.contains("linkbox")) return;
+      var b = document.createElement("div");
+      b.className = "linkbox admin-only";
+      b.innerHTML = '<label>Hidden link (only you see this)<input type="text" placeholder="https://your-checkout-link" autocapitalize="none"></label>';
+      b.querySelector("input").value = a.getAttribute("data-link") || "";
+      a.after(b);
+    });
     document.querySelectorAll(".product").forEach(function (p) {
       if (p.querySelector(".pctl")) return;
       var c = document.createElement("div");
@@ -358,7 +397,7 @@
     if (!$("adminBar")) {
       var bar = document.createElement("div");
       bar.className = "bar admin-only"; bar.id = "adminBar";
-      bar.innerHTML = '<span>Admin mode: click text to edit. Click a button to change its text and link.</span>' +
+      bar.innerHTML = '<span>Admin mode: click text to edit. Click a button to change its text. Type its hidden link in the box under it.</span>' +
         '<button type="button" id="bAdd">Add product</button>' +
         '<button type="button" class="go" id="bSave">Download updated page</button>' +
         '<button type="button" id="bExit">Exit admin</button>';
@@ -373,6 +412,7 @@
   }
 
   function exit() {
+    document.querySelectorAll(".price-offer,.price-regular").forEach(function (el) { if (!el.textContent.trim()) el.innerHTML = ""; });
     body.classList.remove("editing");
     document.querySelectorAll("[contenteditable]").forEach(function (el) { el.removeAttribute("contenteditable"); });
     document.querySelectorAll(".admin-only").forEach(function (el) { el.remove(); });
@@ -383,9 +423,10 @@
     var grid = document.querySelector(".grid");
     grid.insertAdjacentHTML("beforeend",
       '<article class="product"><div class="thumb">Product image</div><div class="info">' +
-      '<h3>New product</h3><p>Describe this product.</p><div class="price">$0.00</div>' +
-      '<!-- BUY BUTTON LINK (new product): paste checkout URL in href -->' +
-      '<a class="btn" href="#">Buy Now</a></div></article>');
+      '<h3>New product</h3><p>Describe this product.</p>' +
+      '<div class="price"><span class="price-offer"></span><span class="price-regular">$0.00</span></div>' +
+      '<!-- BUY BUTTON LINK (new product): paste your URL between the quotes of data-link="". Leave href="#". -->' +
+      '<a class="btn" href="#" data-link="">Buy Now</a></div></article>');
     refresh(); unsaved = true;
     grid.lastElementChild.scrollIntoView({ behavior: "smooth", block: "center" });
   }
@@ -430,8 +471,8 @@
     if (a.classList.contains("btn")) {
       var t = prompt("Button text:", a.textContent.trim());
       if (t !== null && t.trim()) a.textContent = t.trim();
-      var l = prompt("Button link (paste your checkout or page URL):", a.getAttribute("href"));
-      if (l !== null) a.setAttribute("href", l.trim() || "#");
+      var lb = a.nextElementSibling;
+      if (lb && lb.classList.contains("linkbox")) lb.querySelector("input").focus();
       unsaved = true;
     }
   }, true);
@@ -445,7 +486,17 @@
   document.addEventListener("keydown", function (e) {
     if (isEditing() && e.key === "Enter" && e.target.closest("[contenteditable]")) e.preventDefault();
   });
-  document.addEventListener("input", function () { if (isEditing()) unsaved = true; });
+  document.addEventListener("input", function (e) {
+    if (!isEditing()) return;
+    unsaved = true;
+    var t = e.target, box = t.closest && t.closest(".linkbox");
+    if (box) {
+      var a = box.previousElementSibling;
+      if (a) a.setAttribute("data-link", t.value.trim());
+    } else if (t.matches && t.matches(".price-offer,.price-regular") && !t.textContent.trim()) {
+      t.innerHTML = "";
+    }
+  });
   window.addEventListener("beforeunload", function (e) { if (isEditing() && unsaved) { e.preventDefault(); e.returnValue = ""; } });
 
   /* ---------- save: download a clean copy of the page ---------- */
